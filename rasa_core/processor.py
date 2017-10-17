@@ -121,13 +121,15 @@ class MessageProcessor(object):
         self._log_action_on_tracker(tracker, executed_action, events)
         if self._should_predict_another_action(executed_action, events):
             action = self._get_next_action(tracker)
+            # save tracker state to continue conversation from this state    
+            self._save_tracker(tracker)
             return {"next_action": action.name(),
                     "tracker": tracker.current_state()}
         else:
+            self._save_tracker(tracker)
             return {"next_action": None,
                     "tracker": tracker.current_state()}
-        # save tracker state to continue conversation from this state    
-        self._save_tracker(tracker)
+        
     def _log_slots(self, tracker):
         # Log currently set slots
         slot_values = "\n".join(["\t{}: {}".format(s.name, s.value)
